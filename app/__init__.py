@@ -104,10 +104,10 @@ def create_app():
                     app.logger.error(f"Error loading user {user_id}: {e}")
                     return None
             
-            # Create all database tables
+            # Create all database tables (disabled for production - using migrations)
             try:
-                db.create_all()
-                app.logger.info("Database tables created successfully")
+                # db.create_all()  # Commented out for production - migrations handle this
+                app.logger.info("Database initialization handled by migrations")
             except Exception as e:
                 app.logger.error(f"Database initialization error: {e}")
                 # Log the full traceback for debugging

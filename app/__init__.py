@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail
+from flask_migrate import Migrate
 import os
 
 # 1. Initialize extensions globally (Empty objects)
@@ -15,6 +16,7 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 bcrypt = Bcrypt()
 mail = Mail()
+migrate = Migrate()
 
 # Login Management Security Settings
 login_manager.login_view = 'auth.login'
@@ -78,6 +80,7 @@ def create_app():
         # 4. BINDING EXTENSIONS TO APP INSTANCE
         # This "attaches" the global objects to this specific app
         db.init_app(app)
+        migrate.init_app(app, db)
         login_manager.init_app(app)
         bcrypt.init_app(app)
         mail.init_app(app)

@@ -4,7 +4,7 @@ import sys
 import os
 
 # Add the project directory to the sys.path
-project_home = '/home/asiphile/student_housing_app'
+project_home = '/home/Asiphile/student_housing_app'
 if project_home not in sys.path:
     sys.path.insert(0, project_home)
 

@@ -13,18 +13,31 @@ main = Blueprint('main', __name__)
 # --- Helper: Save Images ---
 def save_image(form_picture, folder):
     """Saves image to static/uploads/<folder> and returns the filename."""
-    ext = os.path.splitext(form_picture.filename)[1]
-    filename = f"{os.urandom(8).hex()}{ext}"
-    
-    upload_path = os.path.join(current_app.root_path, 'static', 'uploads', folder)
-    
-    if not os.path.exists(upload_path):
-        os.makedirs(upload_path)
+    try:
+        ext = os.path.splitext(form_picture.filename)[1]
+        filename = f"{os.urandom(8).hex()}{ext}"
         
-    file_path = os.path.join(upload_path, filename)
-    form_picture.save(file_path)
-    
-    return filename
+        upload_path = os.path.join(current_app.root_path, 'static', 'uploads', folder)
+        
+        # Ensure directory exists
+        if not os.path.exists(upload_path):
+            os.makedirs(upload_path, exist_ok=True)
+            
+        file_path = os.path.join(upload_path, filename)
+        
+        # Save the file
+        form_picture.save(file_path)
+        
+        # Verify file was saved
+        if os.path.exists(file_path):
+            current_app.logger.info(f"Image saved successfully: {file_path}")
+            return filename
+        else:
+            raise OSError("File was not saved successfully")
+            
+    except Exception as e:
+        current_app.logger.error(f"Error saving image to {folder}: {e}")
+        raise OSError(f"Failed to save image: {str(e)}")
 
 # --- 1. Dashboards ---
 @main.route('/')

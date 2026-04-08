@@ -66,7 +66,27 @@ def create_app():
         
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-        # 3. GMAIL EMAIL CONFIGURATION
+        # 3. ENSURE UPLOAD DIRECTORIES EXIST AND ARE WRITABLE
+        upload_dirs = [
+            os.path.join(app.root_path, 'static', 'uploads'),
+            os.path.join(app.root_path, 'static', 'uploads', 'profile_pics'),
+            os.path.join(app.root_path, 'static', 'uploads', 'residence_pics')
+        ]
+        
+        for upload_dir in upload_dirs:
+            try:
+                os.makedirs(upload_dir, exist_ok=True)
+                # Test write access
+                test_file = os.path.join(upload_dir, 'test_write.tmp')
+                with open(test_file, 'w') as f:
+                    f.write('test')
+                os.remove(test_file)
+                app.logger.info(f"Upload directory verified: {upload_dir}")
+            except Exception as e:
+                app.logger.error(f"Cannot create/write to upload directory {upload_dir}: {e}")
+                # Don't fail app startup, but log the error
+
+        # 4. GMAIL EMAIL CONFIGURATION
         app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
         app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
         app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True').lower() == 'true'
